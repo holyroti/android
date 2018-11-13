@@ -3,17 +3,14 @@ package nl.carlodvm.androidapp;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        gl.glClearColor(1,0,0,0);
+        gl.glClearColor(1, 1, 0, 0);
     }
 
     @Override
