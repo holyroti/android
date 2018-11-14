@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final double MIN_OPENGL_VERSION = 3.0;
 
     private ArFragment arFragment;
-    private Renderable andyRenderable;
+    private Renderable arrowRenderable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         ModelRenderable.builder()
                 // To load as an asset from the 'assets' folder ('src/main/assets/andy.sfb'):
-                .setSource(this, Uri.parse("andy.sfb"))
+                .setSource(this, Uri.parse("arrow.sfb"))
 
                 // Instead, load as a resource from the 'res/raw' folder ('src/main/res/raw/andy.sfb'):
                 //.setSource(this, R.raw.andy)
 
                 .build()
-                .thenAccept(renderable -> andyRenderable = renderable)
+                .thenAccept(renderable -> arrowRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             Log.e(TAG, "Unable to load Renderable.", throwable);
@@ -50,18 +50,18 @@ public class MainActivity extends AppCompatActivity {
                         });
 
         arFragment.setOnTapArPlaneListener(((hitResult, plane, motionEvent) -> {
-            if (andyRenderable == null)
+            if (arrowRenderable == null)
                 return;
 
             Anchor anchor = hitResult.createAnchor();
             AnchorNode anchorNode = new AnchorNode(anchor);
             anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-            TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
-            andy.getScaleController().setMinScale(0.1f);
-            andy.setParent(anchorNode);
-            andy.setRenderable(andyRenderable);
-            andy.select();
+            TransformableNode arrow = new TransformableNode(arFragment.getTransformationSystem());
+            arrow.getScaleController().setMinScale(0.1f);
+            arrow.setParent(anchorNode);
+            arrow.setRenderable(arrowRenderable);
+            arrow.select();
         }));
     }
 
