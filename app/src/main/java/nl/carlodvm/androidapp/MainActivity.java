@@ -3,26 +3,36 @@ package nl.carlodvm.androidapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.Renderable;
-import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
+import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.Config;
+import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
+import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.UnavailableApkTooOldException;
+import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
+import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
+import com.google.ar.sceneform.FrameTime;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
 
-    private ArFragment arFragment;
-    private Renderable arrowRenderable;
+    private AugmentedImageFragment arFragment;
+    //private ImageView fitToSceneView;
+
+    private AugmentedNode arrow;
+
+    private final Map<AugmentedImage, AugmentedNode> augmentedImageMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,37 +42,57 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         setContentView(R.layout.activity_ux);
-        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 
-        ModelRenderable.builder()
-                // To load as an asset from the 'assets' folder ('src/main/assets/andy.sfb'):
-                .setSource(this, Uri.parse("arrow.sfb"))
+        arrow = new AugmentedNode(this, "arrow.sfb");
+        arFragment = (AugmentedImageFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
+        Session session = null;
+        try {
+            session = new Session(this);
+        } catch (UnavailableArcoreNotInstalledException e) {
+            e.printStackTrace();
+        } catch (UnavailableApkTooOldException e) {
+            e.printStackTrace();
+        } catch (UnavailableSdkTooOldException e) {
+            e.printStackTrace();
+        }
+        // IMPORTANT!!!  ArSceneView requires the `LATEST_CAMERA_IMAGE` non-blocking update mode.
+        Config config = new Config(session);
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+        session.configure(config);
+        arFragment.getSessionConfiguration(session);
+    }
 
-                // Instead, load as a resource from the 'res/raw' folder ('src/main/res/raw/andy.sfb'):
-                //.setSource(this, R.raw.andy)
+    private void onUpdateFrame(FrameTime frameTime) {
+        Frame frame = arFragment.getArSceneView().getArFrame();
 
-                .build()
-                .thenAccept(renderable -> arrowRenderable = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Log.e(TAG, "Unable to load Renderable.", throwable);
-                            return null;
-                        });
+        if (frame == null || frame.getCamera().getTrackingState() != TrackingState.TRACKING)
+            return;
 
-        arFragment.setOnTapArPlaneListener(((hitResult, plane, motionEvent) -> {
-            if (arrowRenderable == null)
-                return;
+        Collection<AugmentedImage> updatedAugmentedImages =
+                frame.getUpdatedTrackables(AugmentedImage.class);
 
-            Anchor anchor = hitResult.createAnchor();
-            AnchorNode anchorNode = new AnchorNode(anchor);
-            anchorNode.setParent(arFragment.getArSceneView().getScene());
+        for (AugmentedImage augmentedImage : updatedAugmentedImages) {
+            switch (augmentedImage.getTrackingState()) {
+                case PAUSED:
+                    String text = "Detected Image " + augmentedImage.getIndex();
+                    Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+                    break;
+                case TRACKING:
+                    if (!augmentedImageMap.containsKey(augmentedImage)) {
+                        augmentedImageMap.put(augmentedImage, arrow);
 
-            TransformableNode arrow = new TransformableNode(arFragment.getTransformationSystem());
-            arrow.getScaleController().setMinScale(0.1f);
-            arrow.setParent(anchorNode);
-            arrow.setRenderable(arrowRenderable);
-            arrow.select();
-        }));
+
+                        arrow.renderNode(augmentedImage, arFragment);
+
+                    }
+                    break;
+                case STOPPED:
+                    augmentedImageMap.remove(augmentedImage);
+                    break;
+            }
+        }
+
     }
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
