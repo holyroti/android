@@ -41,6 +41,8 @@ public class AugmentedNode extends AnchorNode {
         TransformableNode transfomNode = new TransformableNode(arFragment.getTransformationSystem());
         transfomNode.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
         transfomNode.setLocalRotation(Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90f));
+        Vector3 center = new Vector3(.0f, .5f, .0f);
+        transfomNode.setWorldPosition(center);
         transfomNode.getScaleController().setEnabled(false);
         transfomNode.getRotationController().setEnabled(false);
         transfomNode.getTranslationController().setEnabled(false);

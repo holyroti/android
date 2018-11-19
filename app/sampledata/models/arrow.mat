@@ -1,0 +1,41 @@
+material {
+    "name" : "DefaultMaterial",
+    "defines" : [
+        "baseColor"
+    ],
+    "parameters" : [
+        {
+            "type" : "float4",
+            "name" : "keyColor"
+        },
+        {
+           "type" : "float",
+           "name" : "alphaKey"
+        }
+    ],
+    "requires" : [
+        "position",
+        "uv0"
+    ],
+    "shadingModel" : "unlit",
+    // Blending is "masked" instead of "transparent" so that the shadows account for the
+    // transparent regions of the video instead of just the shape of the mesh.
+    "blending" : "transparent",
+    // Material is double sided so that the video is visible when walking behind it.
+    "doubleSided" : true,
+    "transparency" : "twoPassesOneSide"
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+
+        prepareMaterial(material);
+
+        float alpha = materialParams.alphaKey;
+        vec3 color = materialParams.keyColor.rgb;
+
+        material.baseColor.rgb = color;
+        material.baseColor.a = alpha;
+
+    }
+}

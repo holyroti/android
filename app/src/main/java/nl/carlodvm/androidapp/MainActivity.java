@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.carlodvm.androidapp.Animation.ScalingNode;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private AugmentedImageFragment arFragment;
     //private ImageView fitToSceneView;
 
-    private AugmentedNode arrow;
+    private ScalingNode arrow;
 
     private final Map<AugmentedImage, AugmentedNode> augmentedImageMap = new HashMap<>();
 
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ux);
 
-        arrow = new AugmentedNode(this, "arrow.sfb");
+        arrow = new ScalingNode(this, "arrow.sfb");
         arFragment = (AugmentedImageFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
         Session session = null;
@@ -80,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case TRACKING:
                     if (!augmentedImageMap.containsKey(augmentedImage)) {
-                        augmentedImageMap.put(augmentedImage, arrow);
 
+                        augmentedImageMap.put(augmentedImage, arrow);
 
                         arrow.renderNode(augmentedImage, arFragment);
 
