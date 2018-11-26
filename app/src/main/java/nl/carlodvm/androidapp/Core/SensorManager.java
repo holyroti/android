@@ -20,7 +20,7 @@ public class SensorManager implements SensorEventListener {
             m_SensorManager.registerListener(this, accelerometer,
                     android.hardware.SensorManager.SENSOR_DELAY_NORMAL, android.hardware.SensorManager.SENSOR_DELAY_UI);
         }
-        Sensor magneticField = m_SensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor magneticField = m_SensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magneticField != null) {
             m_SensorManager.registerListener(this, magneticField,
                     android.hardware.SensorManager.SENSOR_DELAY_NORMAL, android.hardware.SensorManager.SENSOR_DELAY_UI);
