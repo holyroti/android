@@ -3,7 +3,6 @@ package nl.carlodvm.androidapp;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.math.Quaternion;
@@ -19,6 +18,7 @@ public class AugmentedNode extends AnchorNode {
 
     private Renderable model;
     private TransformableNode TransformableModel;
+    private AugmentedImage image;
 
     public AugmentedNode(Context context, String path) {
         ModelRenderable
@@ -30,13 +30,14 @@ public class AugmentedNode extends AnchorNode {
                     Log.e(TAG, "Exception loading", throwable);
                     return null;
                 });
-        ;
     }
 
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
     public void renderNode(AugmentedImage image, ArFragment arFragment) {
         this.setAnchor(image.createAnchor(image.getCenterPose()));
         this.setParent(arFragment.getArSceneView().getScene());
+
+        this.image = image;
 
         TransformableNode transfomNode = new TransformableNode(arFragment.getTransformationSystem());
         transfomNode.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
@@ -49,6 +50,10 @@ public class AugmentedNode extends AnchorNode {
         transfomNode.setParent(this);
         transfomNode.setRenderable(model);
         transfomNode.select();
+    }
+
+    public AugmentedImage getImage() {
+        return image;
     }
 
     public TransformableNode getTransformableModel() {

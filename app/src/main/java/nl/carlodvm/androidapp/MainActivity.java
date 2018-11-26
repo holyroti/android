@@ -8,22 +8,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.google.ar.core.AugmentedImage;
-import com.google.ar.core.Config;
-import com.google.ar.core.Frame;
-import com.google.ar.core.Session;
-import com.google.ar.core.TrackingState;
+import com.google.ar.core.*;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.sceneform.FrameTime;
+import nl.carlodvm.androidapp.Animation.ScalingNode;
+import nl.carlodvm.androidapp.Core.LocationManager;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import nl.carlodvm.androidapp.Animation.ScalingNode;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -31,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AugmentedImageFragment arFragment;
     //private ImageView fitToSceneView;
+    private LocationManager locationManager;
 
     private ScalingNode arrow;
 
@@ -44,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         setContentView(R.layout.activity_ux);
+
+        locationManager = new LocationManager(this, this);
 
         arrow = new ScalingNode(this, "arrow.sfb");
         arFragment = (AugmentedImageFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
@@ -87,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
                         arrow.renderNode(augmentedImage, arFragment);
 
+                        String loc = locationManager.GetModelGPSLocation(arrow).toString();
+                        Toast.makeText(this, loc, Toast.LENGTH_LONG);
+                        Log.e(TAG, loc);
                     }
                     break;
                 case STOPPED:
