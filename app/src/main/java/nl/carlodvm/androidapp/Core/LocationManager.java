@@ -105,7 +105,7 @@ public class LocationManager implements LocationListener {
         isNetEnabled = m_locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER);
 
         if (!isGPSEnabled && !isNetEnabled) {
-            Toast.makeText(context, "Enable GPS to enable functionality.", Toast.LENGTH_SHORT);
+            Toast.makeText(context, "Enable GPS to enable functionality.", Toast.LENGTH_SHORT).show();
         }
 
     }

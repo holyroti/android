@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         arrow.renderNode(augmentedImage, arFragment);
 
                         String loc = locationManager.GetModelGPSLocation(arrow).toString();
-                        Toast.makeText(this, loc, Toast.LENGTH_LONG);
+                        Toast.makeText(this, loc, Toast.LENGTH_LONG).show();
                         Log.e(TAG, loc);
                     }
                     break;
