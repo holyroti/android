@@ -3,22 +3,29 @@ package nl.carlodvm.androidapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
-import com.google.ar.core.*;
+
+import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.Config;
+import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
+import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.sceneform.FrameTime;
-import nl.carlodvm.androidapp.Animation.ScalingNode;
-import nl.carlodvm.androidapp.Core.LocationManager;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import nl.carlodvm.androidapp.Animation.ScalingNode;
+import nl.carlodvm.androidapp.Core.LocationManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -84,9 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
                         arrow.renderNode(augmentedImage, arFragment);
 
-                        String loc = locationManager.GetModelGPSLocation(arrow).toString();
-                        Toast.makeText(this, loc, Toast.LENGTH_LONG).show();
-                        Log.e(TAG, loc);
+                        Location loc = locationManager.GetModelGPSLocation(arrow);
+                        if (loc != null) {
+                            String locationString = loc.toString();
+                            Toast.makeText(this, locationString, Toast.LENGTH_LONG).show();
+                            Log.e(TAG, locationString);
+                        }
                     }
                     break;
                 case STOPPED:

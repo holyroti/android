@@ -8,7 +8,9 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.google.ar.core.Pose;
+
 import nl.carlodvm.androidapp.AugmentedNode;
 import nl.carlodvm.androidapp.PermissionHelper.LocationPermissionHelper;
 
@@ -17,21 +19,31 @@ public class LocationManager implements LocationListener {
     private final long EARTH_RADIUS = 6378137;
     private final double HALF_PI = Math.PI / 2;
 
-    private boolean isGPSEnabled;
-    private boolean isNetEnabled;
+    private boolean isGPSEnabled = false;
+    private boolean isNetEnabled = false;
+    private boolean hasPermission = false;
 
     private Location m_deviceLocation;
     private SensorManager m_sensorManager;
     private android.location.LocationManager m_locationManager;
+
+    private Context context;
     @SuppressLint("MissingPermission")
     public LocationManager(Context context, Activity activity) {
+        this.context = context;
+
         m_locationManager = (android.location.LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         m_sensorManager = new SensorManager(context);
 
-        checkIfAvailable(context, activity);
+        if (!LocationPermissionHelper.hasLocationPermission(activity)) {
+            LocationPermissionHelper.requestLocationPermission(activity);
+        } else {
+            hasPermission = true;
+            checkIfAvailable(context, activity);
 
-        m_locationManager.requestLocationUpdates(isGPSEnabled ? android.location.LocationManager.GPS_PROVIDER : android.location.LocationManager.NETWORK_PROVIDER
-                , 1000, 2, this);
+            m_locationManager.requestLocationUpdates(isGPSEnabled ? android.location.LocationManager.GPS_PROVIDER : android.location.LocationManager.NETWORK_PROVIDER
+                    , 1000, 2, this);
+        }
     }
 
     public static double getDistanceBetween(Location l1, Location l2) {
@@ -43,6 +55,11 @@ public class LocationManager implements LocationListener {
     public Location GetModelGPSLocation(AugmentedNode node) {
         if (m_deviceLocation == null) {
             Log.e(LocationManager.class.getSimpleName(), "Device location could not be found.");
+            return null;
+        }
+
+        if (!hasPermission) {
+            Toast.makeText(context, "App does not have location permission.", Toast.LENGTH_LONG);
             return null;
         }
 
@@ -97,17 +114,12 @@ public class LocationManager implements LocationListener {
     }
 
     private void checkIfAvailable(Context context, Activity activity) {
-        if (!LocationPermissionHelper.hasLocationPermission(activity)) {
-            LocationPermissionHelper.requestLocationPermission(activity);
-        }
-
         isGPSEnabled = m_locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
         isNetEnabled = m_locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER);
 
         if (!isGPSEnabled && !isNetEnabled) {
             Toast.makeText(context, "Enable GPS to enable functionality.", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
