@@ -4,11 +4,9 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.animation.LinearInterpolator;
-
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.math.Vector3Evaluator;
-
 import nl.carlodvm.androidapp.AugmentedNode;
 
 public class ScalingNode extends AugmentedNode {
@@ -38,9 +36,6 @@ public class ScalingNode extends AugmentedNode {
         float speedMultiplier = getSpeedMultiplier();
 
         // Nothing has changed. Continue rotating at the same speed.
-//        if (lastSpeedMultiplier == speedMultiplier + 1) {
-//            return;
-//        }
         if (!firstRun)
             return;
 
@@ -106,8 +101,6 @@ public class ScalingNode extends AugmentedNode {
      * Returns an ObjectAnimator that makes this node rotate.
      */
     private static ObjectAnimator createAnimator() {
-        // Node's setLocalRotation method accepts Quaternions as parameters.
-        // First, set up orientations that will animate a circle.
         Vector3 scale1 = new Vector3(0.3f, 0.3f, 0.3f);
         Vector3 scale2 = new Vector3(0.1f, 0.1f, 0.1f);
         Vector3 scale3 = new Vector3(0.35f, 0.35f, 0.35f);
@@ -116,13 +109,10 @@ public class ScalingNode extends AugmentedNode {
         ObjectAnimator orbitAnimation = new ObjectAnimator();
         orbitAnimation.setObjectValues(scale1, scale2, scale3, scale4);
 
-        // Next, give it the localRotation property.
         orbitAnimation.setPropertyName("localScale");
 
-        // Use Sceneform's QuaternionEvaluator.
         orbitAnimation.setEvaluator(new Vector3Evaluator());
 
-        //  Allow orbitAnimation to repeat forever
         orbitAnimation.setRepeatCount(ObjectAnimator.INFINITE);
         orbitAnimation.setRepeatMode(ObjectAnimator.RESTART);
         orbitAnimation.setInterpolator(new LinearInterpolator());

@@ -44,15 +44,10 @@ public class SensorManager implements SensorEventListener {
     }
 
     public void updateOrientationAngles() {
-        // Update rotation matrix, which is needed to update orientation angles.
         android.hardware.SensorManager.getRotationMatrix(mRotationMatrix, null,
                 m_AccelerometerReading, m_MagnetometerReading);
 
-        // "mRotationMatrix" now has up-to-date information.
-
         android.hardware.SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
-
-        // "mOrientationAngles" now has up-to-date information.
     }
 
     public float[] getmOrientationAngles() {
