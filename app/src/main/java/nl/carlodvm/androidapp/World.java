@@ -1,7 +1,7 @@
 package nl.carlodvm.androidapp;
 
 import java.util.List;
-import java.awt.geom.*;
+
 public class World {
     public List<Grid> gridList;
     public int x;

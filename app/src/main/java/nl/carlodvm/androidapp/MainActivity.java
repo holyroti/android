@@ -69,8 +69,17 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             // Permission has already been granted
-            MapReader mapReader = new MapReader();
-            mapReader.readFile();
+            //ROHIT DELETE MapReader mapReader = new MapReader();
+            //ROHIT DELETE mapReader.readFile();
+            Algorithm astar = new Algorithm(5,5,0,0,3,2,
+                    new int[][]{
+                            {0,4},{2,2},{3,1},{3,3},{2,1},{2,3}
+                    });
+
+            astar.display();
+            astar.process(); //Apply a*
+            astar.displayScores(); //display scores on grid
+            astar.displaySolution(); //display solution path
         }
 
         super.onCreate(savedInstanceState);
