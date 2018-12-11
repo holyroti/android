@@ -74,6 +74,12 @@ public class MapReader {
                 System.out.println(g.toString() + " " + g.Abbreviation + g.containsPicture + "," + g.pictureName);
             }
 
+            Astar star = new Astar();
+            Grid begin = GridList.get(0);
+            Grid end =  GridList.get(3);
+            star.process(GridList, begin, end);
+            star.printPath();
+
         } catch (IOException e) {
 
             e.printStackTrace();
