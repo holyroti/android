@@ -2,14 +2,17 @@ package nl.carlodvm.androidapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
-
+import android.Manifest;
+import android.content.pm.PackageManager;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
@@ -30,7 +33,7 @@ import nl.carlodvm.androidapp.Core.LocationManager;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
-
+    private static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 12;
     private AugmentedImageFragment arFragment;
     private LocationManager locationManager;
 
@@ -40,6 +43,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+
+
+            }
+        } else {
+            // Permission has already been granted
+            MapReader mapReader = new MapReader();
+            mapReader.readFile();
+        }
+
         super.onCreate(savedInstanceState);
 
         if (!checkIsSupportedDeviceOrFinish(this))
@@ -106,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             Log.e(TAG, "Sceneform requires Android N or later");
@@ -124,5 +156,20 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // We got the permission
+
+            System.out.println("number 6");
+
+        } else {
+
+            System.out.println("number 7");
+
+            // We were not granted permission this time, so don't try to show the contact picker
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }
